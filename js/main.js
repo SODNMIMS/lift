@@ -1,198 +1,176 @@
-/* =================================
-------------------------------------
-	Photo Gallery HTML Template
-	Version: 1.0
- ------------------------------------
- ====================================*/
-
-
-'use strict';
-
-
-$(window).on('load', function() {
-	/*------------------
-		Preloder
-	--------------------*/
-	$(".loader").fadeOut();
-	$("#preloder").delay(400).fadeOut("slow");
-
-});
-
-(function($) {
-	/*------------------
-		Navigation
-	--------------------*/
-	$('.nav-switch-warp').on('click', function() {
-		$('.header-section, .nav-switch').addClass('active');
-		$('.main-warp').addClass('overflow-hidden');
-	});
-
-	$('.header-close').on('click', function() {
-		$('.header-section, .nav-switch').removeClass('active');
-		$('.main-warp').removeClass('overflow-hidden');
-	});
-
-	// Search model
-	$('.search-switch').on('click', function() {
-		$('.search-model').fadeIn(400);
-	});
-
-	$('.search-close-switch').on('click', function() {
-		$('.search-model').fadeOut(400,function(){
-			$('#search-input').val('');
-		});
-	});
-
-
-	/*------------------
-		Background Set
-	--------------------*/
-	$('.set-bg').each(function() {
-		var bg = $(this).data('setbg');
-		$(this).css('background-image', 'url(' + bg + ')');
-	});
+;(function () {
+	
+	'use strict';
 
 
 
-	/*------------------
-		Scrollbar
-	--------------------*/
-	if($(window).width() > 991) {
-		$(".header-section").niceScroll({
-			cursorborder:"",
-			cursorcolor:"#afafaf",
-			boxzoom:false,
-			cursorwidth: 4,
-		});
-	}
+	// iPad and iPod detection	
+	var isiPad = function(){
+		return (navigator.platform.indexOf("iPad") != -1);
+	};
 
-	$(".blog-warp").niceScroll({
-		cursorborder:"",
-		cursorcolor:"#323232",
-		boxzoom:false,
-		cursorwidth: 3,
-		autohidemode:false,
-		background: '#b9c9da',
-		cursorborderradius:0,
-		railoffset: { top: 50, right: 0, left: 0, bottom: 0 },
-		railpadding: { top: 0, right: 0, left: 0, bottom: 100 },
-
-	});
+	var isiPhone = function(){
+	    return (
+			(navigator.platform.indexOf("iPhone") != -1) || 
+			(navigator.platform.indexOf("iPod") != -1)
+	    );
+	};
 
 
-	/*------------------
-		Hero Slider
-	--------------------*/
-	var hero_s = $(".hero-slider");
-    hero_s.owlCarousel({
-        loop: true,
-        margin: 0,
-        nav: true,
-        items: 1,
-        dots: false,
-        animateOut: 'fadeOut',
-    	animateIn: 'fadeIn',
-        navText: ['<img src="./img/angle-left-w.png" alt="">', '<img src="./img/angle-rignt.png" alt="">'],
-        smartSpeed: 1200,
-        autoHeight: false,
-		startPosition: 'URLHash',
-        mouseDrag: false,
-        onInitialized: function() {
-        	var a = this.items().length;
-        	if(a < 10){
-            	$("#snh-1").html("<span>01" + "</span>/0" + a);
-       		} else{
-       			$("#snh-1").html("<span>01" + "</span>/" + a);
-       		}
-        }
-    }).on("changed.owl.carousel", function(a) {
-        var b = --a.item.index, a = a.item.count;
-        if(a < 10){
-        	$("#snh-1").html("<span>0" + ( 1 > b ? b + a : b > a ? b - a : b) + "</span>/0" + a);
-    	} else{
-    		$("#snh-1").html("<span> "+ (1 > b ? b + a : b > a ? b - a : b) + "</span>/" + a);
-    	}
-    });
+	var fullHeight = function() {
 
-
-	/*------------------
-		Gallery Slider
-	--------------------*/
-	$('.gallery-single-slider').owlCarousel({
-        loop: true,
-        margin: 0,
-        nav: true,
-        items: 1,
-        dots: false,
-        navText: ['<img src="./img/angle-left.png" alt="">', '<img src="./img/angle-rignt-w.png" alt="">'],
-	});
-
-
-	/*------------------
-		Isotope Filter
-	--------------------*/
-	var $container = $('.portfolio-gallery');
-		$container.imagesLoaded().progress( function() {
-			$container.isotope();
+		$('.js-fullheight').css('height', $(window).height());
+		$(window).resize(function(){
+			$('.js-fullheight').css('height', $(window).height());
 		});
 
-	$('.portfolio-filter li').on("click", function(){
-		$(".portfolio-filter li").removeClass("active");
-		$(this).addClass("active");
-		var selector = $(this).attr('data-filter');
-		$container.imagesLoaded().progress( function() {
-			$container.isotope({
-				filter: selector,
-			});
+	};
+
+	var burgerMenu = function() {
+
+		$('.js-colorlib-nav-toggle').on('click', function(event) {
+			event.preventDefault();
+			var $this = $(this);
+			if( $('body').hasClass('menu-show') ) {
+				$('body').removeClass('menu-show');
+				$('#colorlib-main-nav > .js-colorlib-nav-toggle').removeClass('show');
+			} else {
+				$('body').addClass('menu-show');
+				setTimeout(function(){
+					$('#colorlib-main-nav > .js-colorlib-nav-toggle').addClass('show');
+				}, 900);
+			}
+		})
+	};
+
+	// Animations
+
+	var contentWayPoint = function() {
+		var i = 0;
+		$('.animate-box').waypoint( function( direction ) {
+
+			if( direction === 'down' && !$(this.element).hasClass('animated') ) {
+				
+				i++;
+
+				$(this.element).addClass('item-animate');
+				setTimeout(function(){
+
+					$('body .animate-box.item-animate').each(function(k){
+						var el = $(this);
+						setTimeout( function () {
+							var effect = el.data('animate-effect');
+							if ( effect === 'fadeIn') {
+								el.addClass('fadeIn animated');
+							} else {
+								el.addClass('fadeInUp animated');
+							}
+
+							el.removeClass('item-animate');
+						},  k * 200, 'easeInOutExpo' );
+					});
+					
+				}, 100);
+				
+			}
+
+		} , { offset: '85%' } );
+	};
+
+
+	var counter = function() {
+		$('.js-counter').countTo({
+			 formatter: function (value, options) {
+	      return value.toFixed(options.decimals);
+	    },
 		});
-		return false;
-	});
+	};
 
-
-
-	/*------------------
-		Accordions
-	--------------------*/
-	$('.panel-link').on('click', function (e) {
-		$('.panel-link').parent('.panel-header').removeClass('active');
-		var $this = $(this).parent('.panel-header');
-		if (!$this.hasClass('active')) {
-			$this.addClass('active');
+	var counterWayPoint = function() {
+		if ($('#colorlib-counter').length > 0 ) {
+			$('#colorlib-counter').waypoint( function( direction ) {
+										
+				if( direction === 'down' && !$(this.element).hasClass('animated') ) {
+					setTimeout( counter , 400);					
+					$(this.element).addClass('animated');
+				}
+			} , { offset: '90%' } );
 		}
-		e.preventDefault();
+	};
+
+	// Owl Carousel
+	var owlCarouselFeatureSlide = function() {
+		var owl = $('.owl-carousel1');
+		owl.owlCarousel({
+			animateOut: 'fadeOut',
+		   animateIn: 'fadeIn',
+		   autoplay: true,
+		   loop:true,
+		   margin:0,
+		   nav:true,
+		   dots: false,
+		   autoHeight: true,
+		   responsive:{
+		      0:{
+		         items:1
+		      },
+		      600:{
+		         items:2
+		      },
+		      1000:{
+		         items:3
+		      }
+		   },
+		   navText: [
+		      "<i class='icon-arrow-left3 owl-direction'></i>",
+		      "<i class='icon-arrow-right3 owl-direction'></i>"
+	     	]
+		});
+		var owl2 = $('.owl-carousel');
+		owl2.owlCarousel({
+			animateOut: 'fadeOut',
+		   animateIn: 'fadeIn',
+		   autoplay: true,
+		   loop:true,
+		   margin:0,
+		   nav:false,
+		   dots: true,
+		   autoHeight: true,
+		   items: 1,
+		   navText: [
+		      "<i class='icon-arrow-left3 owl-direction'></i>",
+		      "<i class='icon-arrow-right3 owl-direction'></i>"
+	     	]
+		});
+		var owl3 = $('.owl-carousel3');
+		owl3.owlCarousel({
+			animateOut: 'fadeOut',
+		   animateIn: 'fadeIn',
+		   autoplay: true,
+		   loop:true,
+		   margin:0,
+		   nav:false,
+		   dots: false,
+		   autoHeight: true,
+		   items: 1,
+		   navText: [
+		      "<i class='icon-arrow-left3 owl-direction'></i>",
+		      "<i class='icon-arrow-right3 owl-direction'></i>"
+	     	]
+		});	
+	};
+
+	
+
+
+	// Document on load.
+	$(function(){
+		fullHeight();
+		burgerMenu();
+		counterWayPoint();
+		contentWayPoint();
+		owlCarouselFeatureSlide();
 	});
 
 
-	/*------------------
-		Circle progress
-	--------------------*/
-	$('.circle-progress').each(function() {
-		var cpvalue = $(this).data("cpvalue");
-		var cpcolor = $(this).data("cpcolor");
-		var cptitle = $(this).data("cptitle");
-		var cpid 	= $(this).data("cpid");
-
-		$(this).append('<div class="'+ cpid +'"></div><div class="progress-info"><h2>'+ cpvalue +'%</h2><p>'+ cptitle +'</p></div>');
-
-		if (cpvalue < 100) {
-
-			$('.' + cpid).circleProgress({
-				value: '0.' + cpvalue,
-				size: 166,
-				thickness: 5,
-				fill: cpcolor,
-				emptyFill: "rgba(0, 0, 0, 0)"
-			});
-		} else {
-			$('.' + cpid).circleProgress({
-				value: 1,
-				size: 166,
-				thickness: 5,
-				fill: cpcolor,
-				emptyFill: "rgba(0, 0, 0, 0)"
-			});
-		}
-
-	});
-
-})(jQuery);
+}());
